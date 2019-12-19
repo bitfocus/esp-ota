@@ -1,0 +1,21 @@
+{
+  "name": "esp-ota",
+  "version": "1.0.0",
+  "description": "Library for uploading firmware or SPIFFS filesystem to ESP32 devices that uses ArduinoOTA",
+  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bitfocus/esp-ota.git"
+  },
+  "keywords": [
+    "esp32",
+    "arduinoota"
+  ],
+  "author": "Håkon Nessjøen <haakon@bitfocus.io>",
+  "license": "MIT",
+  "engines" : { "node" : ">=8.12" },
+  "bugs": {
+    "url": "https://github.com/bitfocus/esp-ota/issues"
+  },
+  "homepage": "https://github.com/bitfocus/esp-ota#readme"
+}
