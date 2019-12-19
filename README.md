@@ -1,6 +1,6 @@
 # esp-ota
 
-[![Donate](https://img.shields.io/badge/donorbox-donate-green.svg)](https://donorbox.org/bitfocus-esp-ota)
+[![Donate](https://img.shields.io/badge/donate-%3C3-blueviolet.svg)](https://donorbox.org/bitfocus-esp-ota)
 
 A library for uploading firmware or SPIFFS filesystem to ESP32 devices that uses `ArduinoOTA`.
 
