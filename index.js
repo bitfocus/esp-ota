@@ -1,5 +1,5 @@
 /*
- * espota for node.js > 8.5
+ * EspOTA for node.js > 8.5
  *
  * Copyright (c) 2019 Bitfocus AS
  *
@@ -48,7 +48,7 @@ function fsReadPromise(fd, buffer, chunkSize) {
 
 const md5 = data => crypto.createHash('md5').update(data).digest('hex');
 
-class espota extends EventEmitter {
+class EspOTA extends EventEmitter {
 
 	constructor(serverHost = "0.0.0.0", serverPort = 0, chunkSize = 1460, timeout = 10) {
 		super();
@@ -307,4 +307,4 @@ class espota extends EventEmitter {
 	}
 }
 
-module.exports = espota;
+module.exports = EspOTA;

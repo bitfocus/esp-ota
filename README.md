@@ -1,5 +1,7 @@
 # esp-ota
 
+[![Donate](https://img.shields.io/badge/donorbox-donate-green.svg)](https://donorbox.org/bitfocus-esp-ota)
+
 A library for uploading firmware or SPIFFS filesystem to ESP32 devices that uses `ArduinoOTA`.
 
 It uses promises for main operation. But you can listen for 'state' and 'progress' events to get more information during the file transfer.
@@ -20,7 +22,7 @@ var EspOTA = require('esp-ota');
 var esp = new EspOTA();
 
 esp.uploadFirmware('/path/to/firmware.bin', '10.0.0.1', 3232)
-.then(function () {
+	.then(function () {
 		console.log("Done");
 	})
 	.catch(function (error) {
