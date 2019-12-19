@@ -89,7 +89,7 @@ Using the `.on('state')` event listener you can get the following events:
  * `transfer_timeout` - The transfer timed out. If this happens after you have seen that progress has transferred all data, there is a possibility that the transfer aborted due to the file transfer being corrupted. (The device checks the MD5sum of the transferred file before it accepts the new firmware and reboots)
  * `done` - The transfer was successful, and the device is now rebooting.
 
- ## License
+## License
 
 Copyright (c) 2019 Bitfocus AS
 
