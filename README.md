@@ -6,7 +6,7 @@ It uses promises for main operation. But you can listen for 'state' and 'progres
 
 ## Installation
 
-```
+```bash
 npm install esp-ota
 ```
 
@@ -14,7 +14,7 @@ npm install esp-ota
 
 Here's a simple example of how to use this in a console-environment:
 
-```
+```js
 var EspOTA = require('esp-ota');
 
 var esp = new EspOTA();
@@ -31,7 +31,7 @@ esp.uploadFirmware('/path/to/firmware.bin', '10.0.0.1', 3232)
 
 Here's a more elaborate example showing more of the possibilities.
 
-```
+```js
 var EspOTA = require('esp-ota');
 
 var esp = new EspOTA(); // Optional arguments in this order: (bindAddress, bindPort, chunkSize, secondsTimeout)
@@ -81,7 +81,7 @@ Using the `.on('state')` event listener you can get the following events:
 
 ## Installing the ArduinoOTA counterpart in your ESP32 code
 
-```
+```c++
 #include <WiFi.h>
 #include <ArduinoOTA.h>
 
