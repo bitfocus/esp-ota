@@ -111,6 +111,13 @@ void loop() {
 }
 ```
 
+## Sponsor
+**Bitfocus AS**
+
+A friendly Oslo based development company in the AV/Broadcast-industry.
+
+www.bitfocus.io
+
 ## License
 
 Copyright (c) 2019 Bitfocus AS
