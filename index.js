@@ -58,9 +58,9 @@ class EspOTA extends EventEmitter {
 		this.timeoutTime = timeout * 1000;
 
 		this.udpsocket = dgram.createSocket('udp4');
-	}
 
-	TARGET = { U_FLASH: 0, U_SPIFFS: 100 };
+		this.TARGET = {U_FLASH: 0, U_SPIFFS: 100};
+	}
 
 	setPassword(passsword) {
 		if (passsword !== undefined) {
