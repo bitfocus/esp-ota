@@ -62,7 +62,7 @@ transfer
 
 ## Methods
 
-For all functions below with port and/or flash parameters, the default port is 3232, and the default target is EspOTA.FLASH.
+For all functions below with port and/or target parameters, the default port is 3232, and the default target is EspOTA.FLASH.
 
 * `setPassword(password)` - Set password before transfer
 * `uploadFirmware(filename, address, port)` - Transfer firmware to FLASH of the device using the specified ip and port. This function returns a `Promise` that will succeed when the file is done transferring and accepted by the device. (an alias for `uploadFile(..., EspOTA.FLASH)`)
