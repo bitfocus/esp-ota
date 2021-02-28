@@ -16,7 +16,7 @@ async function testota() {
 	testme.setPassword('teste');
 
 	try {
-		await testme.uploadFirmware('firmware.bin', '127.0.0.1', 3232);
+		await testme.uploadFile('firmware.bin', '127.0.0.1', 3232, EspOTA.FLASH);
 		process.stdout.write("\n");
 		console.log("DONE");
 	} catch (e) {

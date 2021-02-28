@@ -2,7 +2,7 @@
 
 [![Donate](https://img.shields.io/badge/donate-%3C3-blueviolet.svg)](https://donorbox.org/bitfocus-esp-ota)
 
-A library for uploading firmware or SPIFFS filesystem to ESP32 devices that uses `ArduinoOTA`.
+A library for uploading files to FLASH (firmware) or SPIFFS filesystem on ESP32 and ESP8266 devices that uses `ArduinoOTA`.
 
 It uses promises for main operation. But you can listen for 'state' and 'progress' events to get more information during the file transfer.
 
@@ -21,7 +21,7 @@ var EspOTA = require('esp-ota');
 
 var esp = new EspOTA();
 
-esp.uploadFirmware('/path/to/firmware.bin', '10.0.0.1', 3232)
+esp.uploadFile('/path/to/firmware.bin', '10.0.0.1', 3232, EspOTA.FLASH)
 	.then(function () {
 		console.log("Done");
 	})
@@ -49,7 +49,7 @@ esp.on('progress', function (current, total) {
 // If you need to authenticate, uncomment the following and change the password
 // esp.setPassword('admin');
 
-var transfer = esp.uploadFirmware('/path/to/firmware.bin', '10.0.0.1', 3232);
+var transfer = esp.uploadFile('/path/to/firmware.bin', '10.0.0.1', 3232, EspOTA.FLASH);
 
 transfer
 	.then(function () {
@@ -62,19 +62,23 @@ transfer
 
 ## Methods
 
+For all functions below with port and/or flash parameters, the default port is 3232, and the default target is EspOTA.FLASH.
+
 * `setPassword(password)` - Set password before transfer
-* `uploadFirmware(filename, address, port)` - Transfer firmware to the device using the specified ip and port. This function returns a `Promise` that will succeed when the file is done transferring and accepted by the device. The default port is set to 3232.
-* `uploadSPIFFS(filename, address, port)` - Transfer SPIFFS filesystem to the device using the specified ip and port. This function returns a `Promise` that will succeed when the file is done transferring and accepted by the device. The default port is set to 3232.
-* `uploadFile(filename, address, port, target)` - Main Transfer method for files to target sections using the specified ip, port and target. This function returns a `Promise` that will succeed when the file is done transferring and accepted by the device. The default port is set to `8266` and target is `U_FLASH`.
-* `uploadBuffer(filename, address, port, target)` - Main Transfer method for Buffers to target sections using the specified ip, port and target. This function returns a `Promise` that will succeed when the file is done transferring and accepted by the device. The default port is set to `8266` and target is `U_FLASH`.
+* `uploadFirmware(filename, address, port)` - Transfer firmware to FLASH of the device using the specified ip and port. This function returns a `Promise` that will succeed when the file is done transferring and accepted by the device. (an alias for `uploadFile(..., EspOTA.FLASH)`)
+* `uploadSPIFFS(filename, address, port)` - Transfer SPIFFS filesystem to the device using the specified ip and port. This function returns a `Promise` that will succeed when the file is done transferring and accepted by the device. (an alias for `uploadFile(..., EspOTA.SPIFFS)`)
+* `uploadFile(filename, address, port, target)` - Transfer files to target sections using the specified ip, port and target. This function returns a `Promise` that will succeed when the file is done transferring and accepted by the device.
+* `uploadBuffer(buffer, address, port, target)` - Transfer method for buffers to target sections using the specified ip, port and target. This function returns a `Promise` that will succeed when the file is done transferring and accepted by the device.
 * `on()` - This class extends the `EventEmitter` class, and exposes two events; `state` and `progress`.
 
-## Flashing Targets
+***NOTE!*** The port for `ESP8266` devices is *8266*, and the port for `ESP32` devices is *3232*. Make sure you specify the correct one for your device.
 
-Use these Targets with `uploadFile` or `uploadBuffer` Methods to specify the flashing Target.
+## Flashing targets
 
-* `esp.TARGET.U_FLASH` - Upload to Main Flash.
-* `esp.TARGET.U_SPIFFS` - Upload to File System.
+Use these targets with `uploadFile` or `uploadBuffer` methods to specify the flashing target.
+
+* `EspOTA.FLASH` - Upload to Main Flash.
+* `EspOTA.SPIFFS` - Upload to File System.
 
 ## Possible "states"
 
@@ -88,6 +92,7 @@ Using the `.on('state')` event listener you can get the following events:
  * `invite_accepted` - The device reports that it is ready to transfer data.
  * `connected` - The device has connected to us via TCP, to receive data. This may or may not arrive before `invite_accepted`.
  * `transfer_timeout` - The transfer timed out. If this happens after you have seen that progress has transferred all data, there is a possibility that the transfer aborted due to the file transfer being corrupted. (The device checks the MD5sum of the transferred file before it accepts the new firmware and reboots)
+ * `error` - Error opening file for transfer, or socket error. The specific error is sent via the promise rejection.
  * `done` - The transfer was successful, and the device is now rebooting.
 
 ## Installing the ArduinoOTA counterpart in your ESP32 code

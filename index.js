@@ -49,6 +49,10 @@ function fsReadPromise(fd, buffer, chunkSize) {
 const md5 = data => crypto.createHash('md5').update(data).digest('hex');
 
 class EspOTA extends EventEmitter {
+	static U_FLASH = 0;
+	static U_SPIFFS = 100;
+	static FLASH = 0;
+	static SPIFFS = 100;
 
 	constructor(serverHost = "0.0.0.0", serverPort = 0, chunkSize = 1460, timeout = 10) {
 		super();
@@ -58,8 +62,6 @@ class EspOTA extends EventEmitter {
 		this.timeoutTime = timeout * 1000;
 
 		this.udpsocket = dgram.createSocket('udp4');
-
-		this.TARGET = {U_FLASH: 0, U_SPIFFS: 100};
 	}
 
 	setPassword(passsword) {
@@ -71,14 +73,14 @@ class EspOTA extends EventEmitter {
 	}
 
 	async uploadFirmware(filename, address, port = 3232) {
-		await this.uploadFile(filename, address, port, U_FLASH);
+		await this.uploadFile(filename, address, port, EspOTA.U_FLASH);
 	}
 
 	async uploadSPIFFS(filename, address, port = 3232) {
-		await this.uploadFile(filename, address, port, U_SPIFFS);
+		await this.uploadFile(filename, address, port, EspOTA.U_SPIFFS);
 	}
 
-	async uploadFile(filename, address, port = 8266, target = U_FLASH) {
+	async uploadFile(filename, address, port = 8266, target = EspOTA.U_FLASH) {
 		this.filename = filename;
 		this.address = address;
 		this.port = port;
@@ -95,6 +97,7 @@ class EspOTA extends EventEmitter {
 					await this.handleTransfer(socket, fileInfo);
 					resolve();
 				} catch (e) {
+					this.emit('state', 'error');
 					reject(e);
 				}
 			});
@@ -104,12 +107,11 @@ class EspOTA extends EventEmitter {
 		await fileTransferPromise;
 	}
 
-	async uploadBuffer(buffer, address, port = 8266, target = U_FLASH) {
+	async uploadBuffer(buffer, address, port = 8266, target = EspOTA.U_FLASH) {
 		this.buffer = buffer
 		this.address = address;
 		this.port = port;
 		const fileInfo = await this.getBufferInfo();
-		console.log(fileInfo);
 
 		const server = await this.initServer();
 		const sendInvitationPromise = this.sendInvitation(target, fileInfo, server.address().port);
@@ -121,6 +123,7 @@ class EspOTA extends EventEmitter {
 					await this.handleTransfer(socket, fileInfo);
 					resolve();
 				} catch (e) {
+					this.emit('state', 'error');
 					reject(e);
 				}
 			});
@@ -134,7 +137,7 @@ class EspOTA extends EventEmitter {
 		this.udpsocket.unref();
 		this.emit('state', 'connected');
 		this.emit('progress', 0, fileInfo.filesize);
-		const buffer = new Buffer.alloc(this.chunkSize);
+		const buffer = Buffer.alloc(this.chunkSize);
 		let bytesTransfered = 0;
 		socket.setTimeout(this.timeoutTime);
 
@@ -169,8 +172,9 @@ class EspOTA extends EventEmitter {
 				reject(e);
 			});
 
-			if(this.buffer != undefined){
+			if (this.buffer !== undefined) {
 				let bytesRead;
+
 				while (1) {
 					let bytesRead = this.buffer.slice(bytesTransfered, bytesTransfered + this.chunkSize).length;
 
@@ -179,6 +183,7 @@ class EspOTA extends EventEmitter {
 							socket.write(this.buffer.slice(bytesTransfered, bytesTransfered + this.chunkSize), resolve);
 						});
 						bytesTransfered += bytesRead;
+
 						this.emit('progress', bytesTransfered, fileInfo.filesize);
 
 						// Wait for client to ack
@@ -193,41 +198,41 @@ class EspOTA extends EventEmitter {
 						break;
 					}
 				}
-			}else{
-			fs.open(this.filename, 'r', async (err, fd) => {
-				if (err) {
-					this.udpsocket.close();
-					clearTimeout(timeout);
-					return reject(err);
-				}
+			} else {
+				fs.open(this.filename, 'r', async (err, fd) => {
+					if (err) {
+						this.udpsocket.close();
+						clearTimeout(timeout);
+						return reject(err);
+					}
 
-				let bytesRead;
-				while (1) {
-					let bytesRead = await fsReadPromise(fd, buffer, this.chunkSize);
+					let bytesRead;
+					while (1) {
+						let bytesRead = await fsReadPromise(fd, buffer, this.chunkSize);
 
-					if (bytesRead > 0) {
-						await new Promise(resolve => {
-							socket.write(buffer.slice(0, bytesRead), resolve);
-						});
-						bytesTransfered += bytesRead;
-						this.emit('progress', bytesTransfered, fileInfo.filesize);
-
-						// Wait for client to ack
-						await new Promise(resolve => {
-							socket.once('data', () => {
-								resolve();
+						if (bytesRead > 0) {
+							await new Promise(resolve => {
+								socket.write(buffer.slice(0, bytesRead), resolve);
 							});
-						});
+							bytesTransfered += bytesRead;
+							this.emit('progress', bytesTransfered, fileInfo.filesize);
+
+							// Wait for client to ack
+							await new Promise(resolve => {
+								socket.once('data', () => {
+									resolve();
+								});
+							});
+						}
+
+						if (bytesRead < this.chunkSize) {
+							fs.close(fd, () => {});
+							break;
+						}
 					}
 
-					if (bytesRead < this.chunkSize) {
-						fs.close(fd, () => {});
-						break;
-					}
-				}
-
-				// Done sending, wait for response from esp32
-			});
+					// Done sending, wait for response from esp32
+				});
 			}
 		});
 	}
@@ -288,7 +293,7 @@ class EspOTA extends EventEmitter {
 	}
 
 	async getBufferInfo() {
-		// Calculate md5 of entire file without using a lot of memory
+		// Calculate md5
 		const hash = crypto.createHash('md5');
 		hash.update(this.buffer.slice());
 		const md5sum = hash.digest('hex');
