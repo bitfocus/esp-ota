@@ -65,7 +65,16 @@ transfer
 * `setPassword(password)` - Set password before transfer
 * `uploadFirmware(filename, address, port)` - Transfer firmware to the device using the specified ip and port. This function returns a `Promise` that will succeed when the file is done transferring and accepted by the device. The default port is set to 3232.
 * `uploadSPIFFS(filename, address, port)` - Transfer SPIFFS filesystem to the device using the specified ip and port. This function returns a `Promise` that will succeed when the file is done transferring and accepted by the device. The default port is set to 3232.
+* `uploadFile(filename, address, port, target)` - Main Transfer method for files to target sections using the specified ip, port and target. This function returns a `Promise` that will succeed when the file is done transferring and accepted by the device. The default port is set to `8266` and target is `U_FLASH`.
+* `uploadBuffer(filename, address, port, target)` - Main Transfer method for Buffers to target sections using the specified ip, port and target. This function returns a `Promise` that will succeed when the file is done transferring and accepted by the device. The default port is set to `8266` and target is `U_FLASH`.
 * `on()` - This class extends the `EventEmitter` class, and exposes two events; `state` and `progress`.
+
+## Flashing Targets
+
+Use these Targets with `uploadFile` or `uploadBuffer` Methods to specify the flashing Target.
+
+* `esp.TARGET.U_FLASH` - Upload to Main Flash.
+* `esp.TARGET.U_SPIFFS` - Upload to File System.
 
 ## Possible "states"
 

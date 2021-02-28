@@ -1,6 +1,6 @@
 {
   "name": "esp-ota",
-  "version": "1.0.2",
+  "version": "1.1.0",
   "description": "Library for uploading firmware or SPIFFS filesystem to ESP32 devices that uses ArduinoOTA",
   "main": "index.js",
   "repository": {
