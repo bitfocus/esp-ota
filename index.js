@@ -49,10 +49,6 @@ function fsReadPromise(fd, buffer, chunkSize) {
 const md5 = data => crypto.createHash('md5').update(data).digest('hex');
 
 class EspOTA extends EventEmitter {
-	static U_FLASH = 0;
-	static U_SPIFFS = 100;
-	static FLASH = 0;
-	static SPIFFS = 100;
 
 	constructor(serverHost = "0.0.0.0", serverPort = 0, chunkSize = 1460, timeout = 10) {
 		super();
@@ -73,11 +69,11 @@ class EspOTA extends EventEmitter {
 	}
 
 	async uploadFirmware(filename, address, port = 3232) {
-		await this.uploadFile(filename, address, port, EspOTA.U_FLASH);
+		await this.uploadFile(filename, address, port, U_FLASH);
 	}
 
 	async uploadSPIFFS(filename, address, port = 3232) {
-		await this.uploadFile(filename, address, port, EspOTA.U_SPIFFS);
+		await this.uploadFile(filename, address, port, U_SPIFFS);
 	}
 
 	async uploadFile(filename, address, port = 8266, target = EspOTA.U_FLASH) {
@@ -355,5 +351,10 @@ class EspOTA extends EventEmitter {
 		});
 	}
 }
+
+EspOTA.U_FLASH = U_FLASH;
+EspOTA.U_SPIFFS = U_SPIFFS;
+EspOTA.FLASH = U_FLASH;
+EspOTA.SPIFFS = U_SPIFFS;
 
 module.exports = EspOTA;
