@@ -58,6 +58,7 @@ class EspOTA extends EventEmitter {
 		this.timeoutTime = timeout * 1000;
 
 		this.udpsocket = dgram.createSocket('udp4');
+		this.udpsocket.on('error', (e) => this.emit('error', e));
 	}
 
 	setPassword(passsword) {
@@ -240,6 +241,7 @@ class EspOTA extends EventEmitter {
 				server.listen(this.serverPort, () => {
 					resolve(server);
 				}).unref();
+				server.on('error', (e) => this.emit('error'));
 			} catch (e) {
 				reject(e);
 			}
