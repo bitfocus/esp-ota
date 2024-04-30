@@ -1,4 +1,13 @@
-
+type EmitterEvent = {
+	type: 'error',
+	data: Error
+} | {
+	type: 'state',
+	data: 'error' | 'transfer_timeout' | 'connected' | 'auth_sent' | 'done' | 'resend_invite' | 'invite_timeout' | 'invite_sent' | 'invite_accepted' | 'need_auth'
+} | {
+	type: 'progress',
+	data: { sent: number, total: number }
+}
 declare module 'esp-ota' {
 
     import EventEmitter = require("events");
@@ -23,6 +32,7 @@ declare module 'esp-ota' {
         getBufferInfo(): Promise<{ md5sum: string, filesize: number }>;
         authenticate(data: string): void;
         sendInvitation(command: number, fileInfo: { md5sum: string, filesize: number }, port: number, retries?: number): Promise<void>;
+		on<T extends EmitterEvent["type"]>(event: T, listener: (data: Extract<EmitterEvent, { type: T }>['data']) => void): this;
     }
 
     export = EspOTA;

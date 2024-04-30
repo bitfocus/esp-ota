@@ -133,7 +133,7 @@ class EspOTA extends EventEmitter {
 	handleTransfer(socket, fileInfo) {
 		this.udpsocket.unref();
 		this.emit('state', 'connected');
-		this.emit('progress', 0, fileInfo.filesize);
+		this.emit('progress', { sent: 0, total: fileInfo.filesize });
 		const buffer = Buffer.alloc(this.chunkSize);
 		let bytesTransfered = 0;
 		socket.setTimeout(this.timeoutTime);
@@ -181,7 +181,7 @@ class EspOTA extends EventEmitter {
 						});
 						bytesTransfered += bytesRead;
 
-						this.emit('progress', bytesTransfered, fileInfo.filesize);
+						this.emit("progress", { sent: bytesTransfered, total: fileInfo.filesize });
 
 						// Wait for client to ack
 						await new Promise(resolve => {
@@ -212,7 +212,10 @@ class EspOTA extends EventEmitter {
 								socket.write(buffer.slice(0, bytesRead), resolve);
 							});
 							bytesTransfered += bytesRead;
-							this.emit('progress', bytesTransfered, fileInfo.filesize);
+							this.emit("progress", {
+								sent: bytesTransfered,
+								total: fileInfo.filesize,
+							});
 
 							// Wait for client to ack
 							await new Promise(resolve => {
